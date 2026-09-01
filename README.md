@@ -113,4 +113,3 @@ The system aims to provide a complete pipeline where natural-language requests a
 ---
 
 
-**Course:** Compiler Design
