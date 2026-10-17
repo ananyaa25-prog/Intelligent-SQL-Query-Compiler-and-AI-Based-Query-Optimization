@@ -1,0 +1,69 @@
+{
+  "success": true,
+  "results_equivalent": true,
+  "original_plan": {
+    "success": true,
+    "sql": "\nSELECT student_id, name\nFROM students\nWHERE gpa >= 9.0 AND gpa >= 8.0\n",
+    "plan": [
+      {
+        "id": 3,
+        "parent": 0,
+        "detail": "SEARCH students USING INDEX idx_students_gpa (gpa>?)"
+      }
+    ],
+    "uses_index": true,
+    "has_table_scan": false,
+    "uses_temporary_structure": false,
+    "error": null
+  },
+  "optimized_plan": {
+    "success": true,
+    "sql": "\nSELECT student_id, name\nFROM students\nWHERE gpa >= 9.0\n",
+    "plan": [
+      {
+        "id": 3,
+        "parent": 0,
+        "detail": "SEARCH students USING INDEX idx_students_gpa (gpa>?)"
+      }
+    ],
+    "uses_index": true,
+    "has_table_scan": false,
+    "uses_temporary_structure": false,
+    "error": null
+  },
+  "original_benchmark": {
+    "success": true,
+    "repetitions": 7,
+    "times_ms": [
+      0.105,
+      0.097,
+      0.094,
+      0.104,
+      0.094,
+      0.093,
+      0.094
+    ],
+    "median_ms": 0.094,
+    "minimum_ms": 0.093,
+    "maximum_ms": 0.105,
+    "error": null
+  },
+  "optimized_benchmark": {
+    "success": true,
+    "repetitions": 7,
+    "times_ms": [
+      0.092,
+      0.09,
+      0.09,
+      0.09,
+      0.089,
+      0.089,
+      0.089
+    ],
+    "median_ms": 0.09,
+    "minimum_ms": 0.089,
+    "maximum_ms": 0.092,
+    "error": null
+  },
+  "improvement_percent": 4.26
+}
