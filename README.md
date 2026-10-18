@@ -110,6 +110,6 @@ This integration of **AI and compiler techniques** is the core idea of the proje
 
 The system aims to provide a complete pipeline where natural-language requests are transformed into SQL, **checked for correctness, optimized, and executed**, making database interaction easier for non-technical users while demonstrating practical Compiler Design concepts.
 
----
-
+---Deployed App link:
+https://ananyaa25-prog-intelligent-s-intelligent-sql-compilerapp-oqpcbf.streamlit.app/
 
