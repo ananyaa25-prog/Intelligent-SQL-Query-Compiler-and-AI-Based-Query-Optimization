@@ -12,6 +12,10 @@ sys.path.insert(0, str(PERSON2_DIR))
 from semantic_analyzer import validate_sql
 from execution_engine import execute_sql
 from evaluation import analyze_query, compare_queries
+from person1.compiler import compile_sql
+from person1.nl_to_sql import generate_sql
+
+
 
 
 st.set_page_config(
@@ -36,6 +40,85 @@ with st.sidebar:
     st.write("10 courses")
     st.write("3,000 enrollments")
     st.caption("SQLite · Read-only query execution")
+
+
+st.divider()
+st.subheader("Person 1: SQL Compiler")
+
+compiler_sql = st.text_area(
+    "Enter SQL to compile",
+    key="compiler_sql",
+    value="SELECT student_id, name FROM students WHERE gpa >= 9.0 AND gpa >= 8.0;",
+    height=100,
+)
+
+if st.button("Compile SQL"):
+    with st.spinner("Analyzing and optimizing SQL..."):
+        result = compile_sql(compiler_sql)
+
+    if result["success"]:
+        st.success("Compilation completed successfully.")
+
+        st.write("### Lexical Analysis — Tokens")
+        st.dataframe(
+            pd.DataFrame(result["tokens"]),
+            use_container_width=True,
+        )
+
+        st.write("### Syntax Analysis — AST")
+        st.json(result["ast"])
+
+        st.write("### Rule-Based Optimization")
+        st.code(result["optimized_sql"], language="sql")
+
+        st.session_state["original_sql"] = compiler_sql
+        st.session_state["optimized_sql"] = result["optimized_sql"]
+    else:
+        st.error(result["error"])
+
+st.divider()
+st.subheader("Natural Language to SQL")
+st.caption("Describe what you want in English. This local rule-based generator does not require an API key.")
+
+natural_language = st.text_input(
+    "Describe your query",
+    placeholder="e.g. Show the top 10 students",
+    key="natural_language_input",
+)
+
+
+if st.button("Generate SQL"):
+    try:
+        generated_sql = generate_sql(natural_language)
+        st.session_state.pop("generated_sql", None)
+
+        validation = validate_sql(generated_sql)
+
+        if validation.get("valid"):
+            st.session_state["generated_sql"] = generated_sql
+            st.success("SQL generated and validated successfully.")
+        else:
+            st.error(
+                "SQL was generated, but validation failed. "
+                "Review the error before using this query."
+            )
+            st.write(validation.get("error", validation))
+
+    except ValueError as exc:
+        st.session_state.pop("generated_sql", None)
+        st.error(str(exc))
+
+
+
+
+if st.session_state.get("generated_sql"):
+    st.write("Generated SQL")
+    st.code(st.session_state["generated_sql"], language="sql")
+
+    if st.button("Use Generated SQL in Workspace"):
+        st.session_state["sql_input"] = st.session_state["generated_sql"]
+        st.rerun()
+
 
 st.subheader("SQL Query Workspace")
 
