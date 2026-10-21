@@ -1,23 +1,22 @@
+"""Compilation entrypoint for Person 1 frontend and optimizer."""
 
 from pathlib import Path
 import sys
 
-# Support imports both from the project root and direct script execution.
+# Support direct execution
 PERSON1_DIR = Path(__file__).resolve().parent
-if str(PERSON1_DIR) not in sys.path:
-    sys.path.insert(0, str(PERSON1_DIR))
+ROOT_DIR = PERSON1_DIR.parent
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
 
-from lexer import tokenize
-from parser import parse_sql
+from sqlcompiler.frontend.lexer import tokenize
+from sqlcompiler.frontend.parser import parse_sql
+from sqlcompiler.frontend.ast_nodes import ast_to_sql, ast_to_dict, ast_to_dot
 from optimizer import optimize_sql
 
 
 def compile_sql(sql: str) -> dict:
-    """
-    Run the current SQL through the lexer, parser, and optimizer.
-
-    Returns token details, the AST, and optimized SQL.
-    """
+    """Run SQL through lexer, parser, and optimizer."""
     if not sql or not sql.strip():
         return {
             "success": False,
@@ -36,15 +35,18 @@ def compile_sql(sql: str) -> dict:
                     "type": token.type,
                     "value": token.value,
                     "position": token.position,
+                    "line": token.line,
+                    "column": token.column,
                 }
                 for token in tokens
             ],
             "ast": {
-                "columns": ast.columns,
+                "columns": [c.to_sql() for c in ast.columns],
                 "table": ast.table,
-                "where": ast.where,
-                "order_by": ast.order_by,
+                "where": ast.where.to_sql() if ast.where else None,
+                "order_by": ", ".join(o.to_sql() for o in ast.order_by) if ast.order_by else None,
                 "limit": ast.limit,
+                "tree": ast_to_dict(ast),
             },
             "optimized_sql": optimized_sql,
         }
@@ -63,16 +65,9 @@ if __name__ == "__main__":
     )
 
     result = compile_sql(example)
-
     if result["success"]:
-        print("TOKENS")
-        for token in result["tokens"]:
-            print(token)
-
-        print("\nAST")
-        print(result["ast"])
-
-        print("\nOPTIMIZED SQL")
-        print(result["optimized_sql"])
+        print("TOKENS:", len(result["tokens"]))
+        print("AST:", result["ast"])
+        print("OPTIMIZED:", result["optimized_sql"])
     else:
-        print("Compilation error:", result["error"])
+        print("Error:", result["error"])

@@ -1,5 +1,10 @@
-﻿__pycache__/
-*.py[cod]
 .venv/
 venv/
+__pycache__/
+.pytest_cache/
+*.py[cod]
+*.db
+*.sqlite
 .env
+.DS_Store
+__MACOSX/

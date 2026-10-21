@@ -1,4 +1,4 @@
-﻿streamlit
-pandas
-sqlglot
-pytest
+streamlit>=1.36,<2
+pandas>=2.0,<4
+sqlglot>=25,<31
+z3-solver>=4.12

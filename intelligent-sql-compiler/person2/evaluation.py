@@ -2,6 +2,8 @@
 import sqlite3
 import statistics
 import time
+from collections import Counter
+import sqlglot
 
 from semantic_analyzer import DB_PATH, validate_sql
 from execution_engine import execute_sql
@@ -150,14 +152,16 @@ def benchmark_query(sql, repetitions=7):
         # Warm-up run, not included in the reported samples.
         conn.set_progress_handler(should_interrupt, 1000)
         cursor = conn.execute(sql)
-        cursor.fetchall()
+        if len(cursor.fetchmany(501)) > 500:
+            return {"success": False, "error": "Benchmark is limited to queries returning at most 500 rows."}
 
         for _ in range(repetitions):
             deadline = time.monotonic() + 5.0
             start = time.perf_counter()
 
             cursor = conn.execute(sql)
-            cursor.fetchall()
+            if len(cursor.fetchmany(501)) > 500:
+                return {"success": False, "error": "Benchmark is limited to queries returning at most 500 rows."}
 
             elapsed_ms = (time.perf_counter() - start) * 1000
             timings.append(elapsed_ms)
@@ -223,10 +227,17 @@ def compare_queries(original_sql, optimized_sql, repetitions=7):
     from collections import Counter
 
     same_columns = original_result["columns"] == optimized_result["columns"]
-    same_rows = Counter(
-        tuple(row) for row in original_result["rows"]
-    ) == Counter(
-        tuple(row) for row in optimized_result["rows"]
+    try:
+        original_tree = sqlglot.parse_one(original_sql, read="sqlite")
+        optimized_tree = sqlglot.parse_one(optimized_sql, read="sqlite")
+    except sqlglot.errors.ParseError:
+        return {"success": False, "error": "Could not establish equivalence: SQL parsing failed."}
+    ordered = bool(original_tree.args.get("order")) or bool(optimized_tree.args.get("order"))
+    same_rows = (
+        original_result["rows"] == optimized_result["rows"]
+        if ordered else
+        Counter(tuple(row) for row in original_result["rows"])
+        == Counter(tuple(row) for row in optimized_result["rows"])
     )
 
     if not same_columns or not same_rows:
@@ -235,6 +246,9 @@ def compare_queries(original_sql, optimized_sql, repetitions=7):
             "error": "Queries produced different results. "
             "Performance comparison stopped.",
         }
+
+    # Data comparison on this finite database is evidence for this run only;
+    # it does not prove equivalence for every possible database state.
 
     original_plan = analyze_query(original_sql)
     optimized_plan = analyze_query(optimized_sql)
@@ -270,6 +284,7 @@ def compare_queries(original_sql, optimized_sql, repetitions=7):
     return {
         "success": True,
         "results_equivalent": True,
+        "equivalence_scope": "Observed full result sets on the current sample database; not a proof for all database states.",
         "original_plan": original_plan,
         "optimized_plan": optimized_plan,
         "original_benchmark": original_benchmark,

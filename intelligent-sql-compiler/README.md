@@ -1,401 +1,163 @@
-﻿# Intelligent SQL Query Compiler with AI-Based Query Optimization
-
-
-
-## 1. Project Overview
-
-
-
-The **Intelligent SQL Query Compiler** is a Python-based application that demonstrates SQL compilation concepts, rule-based query optimization, database validation, safe query execution, and query performance evaluation.
-
-
-
-The application provides a Streamlit web interface where users can enter SQL queries or describe supported database requests in natural language. Natural-language requests are converted into SQL using a local rule-based generator.
-
-
-
-The generated SQL can then be validated and executed against a sample university database. The application also supports query-plan analysis and performance comparison between original and optimized SQL statements.
-
-
-
-## 2. Objectives
-
-
-
-\- Implement lexical analysis and SQL tokenization.
-
-\- Perform basic syntax analysis and construct an Abstract Syntax Tree (AST).
-
-\- Apply rule-based SQL optimization.
-
-\- Convert supported natural-language requests into SQL.
-
-\- Validate SQL queries against the database schema.
-
-\- Execute permitted read-only SQL queries safely.
-
-\- Analyze query execution plans using SQLite EXPLAIN functionality.
-
-\- Compare the results and execution performance of original and optimized queries.
-
-\- Provide an interactive web interface using Streamlit.
-
-
-
-## 3. Technologies Used
-
-
-
-\- **Python** â€” Core programming language.
-
-\- **Streamlit** â€” Interactive web application.
-
-\- **SQLite** â€” Relational database.
-
-\- **Pandas** â€” Tabular result display and data processing.
-
-\- **SQLGlot** â€” SQL parsing and validation support.
-
-\- **Regular Expressions** â€” Token recognition and rule-based SQL optimization.
-
-\- **Unittest** â€” Testing the optimizer.
-
-
-
-## 4. System Architecture
-
-
-
-The application consists of two primary modules.
-
-
-
-### Person 1: SQL Compiler and Optimization
-
-
-
-\- `lexer.py` â€” Tokenizes SQL statements into keywords, identifiers, operators, numbers, and punctuation.
-
-\- `parser.py` â€” Parses supported SELECT statements and creates an AST.
-
-\- `optimizer.py` â€” Applies basic rule-based SQL optimization.
-
-\- `compiler.py` â€” Integrates lexical analysis, syntax analysis, and optimization.
-
-\- `nl\_to\_sql.py` â€” Converts supported English requests into SQL using predefined rules.
-
-\- `test\_optimizer.py` â€” Tests the rule-based optimizer.
-
-
-
-### Person 2: Database and Query Evaluation
-
-
-
-\- `database.py` â€” Supports database setup and data preparation.
-
-\- `schema.sql` â€” Defines the database schema.
-
-\- `semantic\_analyzer.py` â€” Validates SQL queries and checks them against database rules.
-
-\- `execution\_engine.py` â€” Executes permitted read-only SQL queries.
-
-\- `evaluation.py` â€” Analyzes execution plans and compares query performance.
-
-\- `university.db` â€” Sample university database.
-
-
-
-### Application Interface
-
-
-
-\- `app.py` â€” Connects the compiler, natural-language generator, database validation, query execution, and optimization evaluation through Streamlit.
-
-
-
-## 5. Main Features
-
-
-
-### 5.1 Lexical Analysis
-
-
-
-The lexer divides a SQL statement into tokens and identifies their types and positions.
-
-
-
-### 5.2 Syntax Analysis
-
-
-
-The parser constructs an Abstract Syntax Tree containing supported query components, including selected columns, table name, WHERE condition, ORDER BY clause, and LIMIT clause.
-
-
-
-### 5.3 Rule-Based SQL Optimization
-
-
-
-The optimizer demonstrates a basic optimization rule by removing a redundant weaker numeric lower-bound condition connected using AND.
-
-
-
-Example:
-
-
-
-Original SQL:
-
-
-
-&#x20;   SELECT student\_id, name
-
-&#x20;   FROM students
-
-&#x20;   WHERE gpa >= 9.0 AND gpa >= 8.0;
-
-
-
-Optimized SQL:
-
-
-
-&#x20;   SELECT student\_id, name
-
-&#x20;   FROM students
-
-&#x20;   WHERE gpa >= 9.0;
-
-
-
-The optimization is demonstrated for supported query patterns and is not intended to handle every possible SQL expression.
-
-
-
-### 5.4 Natural Language-to-SQL
-
-
-
-Users can describe supported database requests in English. The local rule-based generator converts matching requests into SQL without requiring an external AI API or API key.
-
-
-
-Example request:
-
-
-
-&#x20;   Show the top 10 students
-
-
-
-Generated SQL:
-
-
-
-&#x20;   SELECT student\_id, name, gpa
-
-&#x20;   FROM students
-
-&#x20;   ORDER BY gpa DESC
-
-&#x20;   LIMIT 10;
-
-
-
-Other supported examples include requests to list courses, count students, count students by department, and retrieve students above a specified GPA.
-
-
-
-### 5.5 Semantic Validation
-
-
-
-Generated or manually entered SQL can be checked against the database schema and validation rules before execution.
-
-
-
-### 5.6 Safe Query Execution
-
-
-
-The application executes permitted read-only queries and displays the returned records and execution time.
-
-
-
-### 5.7 Query Plan Analysis
-
-
-
-The application displays query-plan information and indicators such as index usage, table scans, and temporary structures when available.
-
-
-
-### 5.8 Performance Evaluation
-
-
-
-The application compares original and optimized queries using result-equivalence checks, median execution times, measured improvement, and query execution plans.
-
-
-
-## 6. Database
-
-
-
-The project uses a sample university database containing:
-
-
-
-\- 1,000 students
-
-\- 10 courses
-
-\- 3,000 enrollments
-
-
-
-The database supports demonstrations involving student records, GPA filtering, course information, aggregations, and joins where supported by the database modules.
-
-
-
-## 7. Installation and Setup
-
-
-
-### Prerequisites
-
-
-
-\- Python 3.11 or a compatible Python version.
-
-\- pip package installer.
-
-\- Windows, macOS, or Linux.
-
-
-
-### Step 1: Open the project directory
-
-
-
-Open PowerShell or a terminal in the directory containing `app.py`.
-
-
-
-### Step 2: Install dependencies
-
-
-
-Run:
-
-
-
-&#x20;   python -m pip install streamlit pandas sqlglot
-
-
-
-### Step 3: Run the application
-
-
-
-Run:
-
-
-
-&#x20;   python -m streamlit run app.py
-
-
-
-Open the local URL displayed in the terminal, usually:
-
-
-
-&#x20;   http://localhost:8501
-
-
-
-## 8. Running Tests
-
-
-
-To run the Person 1 optimizer tests:
-
-
-
-&#x20;   python -m unittest discover -s person1 -p "test\_*.py" -v
-
-
-
-The tests cover supported optimization behavior, including redundant lower-bound removal, preservation of stronger conditions, different columns, OR conditions, and queries without WHERE clauses.
-
-
-
-## 9. How to Use the Application
-
-
-
-1\. Start the Streamlit application.
-
-2\. Enter a supported English request in the Natural Language-to-SQL section.
-
-3\. Click **Generate SQL**.
-
-4\. Review the generated SQL and its validation result.
-
-5\. Click **Use Generated SQL in Workspace**.
-
-6\. Use **Validate SQL** to check a query or **Validate \& Execute** to retrieve results.
-
-7\. Use **Explain Plan** to inspect the execution plan.
-
-8\. Enter an original query and its optimized version in Optimization Evaluation.
-
-9\. Click **Compare Queries** to review result equivalence, execution timings, and query plans.
-
-
-
-## 10. Limitations
-
-
-
-\- The natural-language generator uses predefined patterns rather than a general-purpose generative AI model.
-
-\- The lexer and parser support a limited subset of SQL syntax.
-
-\- The optimizer implements basic rules and is not a complete cost-based optimizer.
-
-\- Performance measurements can vary between runs and should not be treated as guaranteed speed improvements.
-
-\- Complex queries should be tested using the database workspace and validation features rather than assuming the basic compiler parser supports all SQL constructs.
-
-
-
-## 11. Future Enhancements
-
-
-
-\- Expand SQL grammar support for joins, grouping, subqueries, and additional SQL constructs.
-
-\- Add more optimization rules with equivalence checks.
-
-\- Improve natural-language understanding and supported query patterns.
-
-\- Add additional test cases for semantic validation and execution safety.
-
-\- Improve benchmark reporting and repeatability.
-
-\- Explore optional generative-AI integration for natural-language SQL generation.
-
-
-
-## 12. Conclusion
-
-
-
-The project demonstrates how compiler design concepts can be applied to SQL processing and optimization. By combining lexical analysis, basic syntax parsing, rule-based optimization, semantic validation, safe database execution, and performance evaluation in a single web application, it provides an educational demonstration of the SQL query processing workflow.
-
-
-
-
+# Intelligent SQL Query Compiler
+
+An educational compiler-design SQL optimization, verification, and execution system built for a college Compiler Design project. It demonstrates classical compiler phases (lexing, recursive-descent parsing with precedence climbing, symbol table analysis, type checking, multi-pass AST rewrites, relational algebra IR lowering, and bytecode inspection) paired with modern compiler-in-the-loop AI guardrails and formal SMT equivalence verification.
+
+---
+
+## 1. Architecture
+
+```mermaid
+flowchart TD
+    In[Input: SQL or Natural Language] --> NL[NL Engine: Deterministic Templates OR LLM with Compiler-in-the-Loop]
+    NL --> Lex[Lexer: 1-Indexed Line/Col Tracking & Caret Diagnostics]
+    Lex --> Parse[Hand-written Recursive Descent Parser + Precedence Climbing]
+    Parse --> AST[Typed AST Nodes: SelectStmt, BinaryOp, FunctionCall, etc.]
+    Parse -. Fallback / Cross-check .-> SQLGlot[SQLGlot Parser]
+    
+    AST --> Sem[Semantic Analyzer & Catalog Symbol Table]
+    Sem --> TypeCheck[Type Checker & Scopes: Table/Col Resolution, Typematch, GROUP BY/HAVING Rules]
+    TypeCheck -->|Annotated AST| Opt[Pass Manager: 8 AST Optimizer Passes to Fixpoint]
+    
+    Opt --> IR[Relational Algebra IR: Scan, Select, Project, Join, Aggregate + Cost Model]
+    Opt --> Cand[Optimized Candidate AST & Pretty-Printed SQL]
+    
+    Cand --> Gate{3-Layer Equivalence Gate}
+    Gate -->|Layer A| RunSample[Sample DB Exact Result Comparison]
+    Gate -->|Layer B| DiffTest[Randomized Differential Testing: 50 In-Memory DBs with Edge Cases]
+    Gate -->|Layer C| SMT[Z3 SMT Solver: Three-Valued Logic Prover]
+    
+    Gate -->|All Active Layers Pass| Approved[Candidate Approved]
+    Gate -->|Any Layer Disagrees| Rejected[Candidate Rejected: Fallback to Original SQL]
+    
+    Approved --> Exec[Read-Only SQLite Engine: mode=ro, PRAGMA query_only, 5s Timeout, 500-Row Cap]
+    Rejected --> Exec
+    
+    Exec --> Bytecode[VDBE Bytecode Disassembler & Static Opcode Metrics]
+    Exec --> Benchmark[Measured Benchmark: Repeated Medians]
+    Exec --> UI[Streamlit UI: Pipeline, Compiler Phases Deep-Dive, & Verification Lab]
+```
+
+---
+
+## 2. Feature Matrix: Implemented vs. Optional
+
+| Classical Phase | Feature | Status | Notes |
+| :--- | :--- | :--- | :--- |
+| **Frontend** | Regex Lexer with line & column tracking | **Implemented** | 1-indexed, caret-pointing `LexicalError`. |
+| **Frontend** | Recursive Descent + Precedence Climbing Parser | **Implemented** | Full AST classes in `ast_nodes.py`. Handles joins, aggregates, GROUP BY, HAVING, ORDER BY, LIMIT (subqueries are not supported by hand-written parser; queries with subqueries fall back to SQLGlot). |
+| **Frontend** | AST Pretty-printer (`ast_to_sql`) & Graphviz DOT | **Implemented** | Complete round-trip equivalence tested. |
+| **Semantic** | SQLite Catalog Symbol Table (`symbols.py`) | **Implemented** | Introspects `PRAGMA table_info`, tracks column data types, nullability, and query-level scopes/aliases. |
+| **Semantic** | Semantic Diagnostics & Type Checker (`typecheck.py`) | **Implemented** | E101-E501 codes with caret messages and `difflib` "Did you mean?" suggestions. Enforces standard aggregation & grouping rules. |
+| **Optimizer** | Multi-Pass AST Rewriter & Trace (`manager.py`) | **Implemented** | 8 passes applied iteratively to fixpoint: constant folding, boolean simplification, range consolidation, contradiction detection, DISTINCT removal, `*` expansion, predicate pushdown, and IN normalization. |
+| **Intermediate Rep.** | Relational Algebra IR & Cost Model (`algebra.py`) | **Implemented** | Lowers AST to $\sigma$, $\pi$, $\bowtie$, $\gamma$, etc. Estimates selectivity/cardinality; suggests optimal left-deep join order. |
+| **Verification** | Layer A: Sample DB execution comparison | **Implemented** | Multiset and ordered row comparisons on sample database. |
+| **Verification** | Layer B: Randomized Differential Testing (`difftest.py`) | **Implemented** | In-memory SQLite generation with NULLs, duplicates, empty tables, and boundary values across 50 tests. |
+| **Verification** | Layer C: Z3 SMT Formal Equivalence Prover (`smt.py`) | **Optional** | Translates predicates to Z3 under SQL 3-valued logic. Formally proves equivalence (UNSAT) or produces counterexamples (SAT). Requires `z3-solver`. |
+| **Verification** | Mutation Testing Demo (`mutation.py`) | **Implemented** | 5 deliberate optimizer bugs caught and classified by the verification gate. |
+| **Codegen** | VDBE Bytecode Disassembler (`bytecode.py`) | **Implemented** | Runs SQLite `EXPLAIN`, extracts opcodes, and counts static loop/seek/sorter complexities. |
+| **Natural Language**| Deterministic Schema-Aware Template Generator | **Implemented** | Recognizes synonyms ("pupils", "marks"), department/age filters, and 3-table joins. |
+| **Natural Language**| Compiler-in-the-Loop LLM Generator (`llm.py`) | **Optional / Disabled** | Connects to OpenAI, Ollama, or custom endpoints. Untrusted output is verified by parser and semantic checker with 2-attempt diagnostic repair loop. |
+| **Execution** | Read-Only Safe Execution Engine | **Implemented** | URI `mode=ro`, `PRAGMA query_only = ON`, SQLite progress-handler timeout (5s), and 500-row cap. |
+| **UI** | Streamlit Interactive Explorer (`app.py`) | **Implemented** | "Compiler Phases" inspection tab, AST/Algebra Graphviz visualizations, verification mutant test lab, and benchmark report generator. |
+
+---
+
+## 3. Installation & Setup
+
+Python 3.10 or newer is recommended. Run commands from the repository root:
+
+### macOS / Linux
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt -r requirements-dev.txt
+python person2/database.py
+streamlit run app.py
+```
+
+### Windows (PowerShell)
+```powershell
+py -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt -r requirements-dev.txt
+python person2/database.py
+streamlit run app.py
+```
+
+*Note: Initializing the database creates `person2/university.db` from `person2/schema.sql` seeded with 1,000 students, 10 courses, and 3,000 enrollments.*
+
+---
+
+## 4. Enabling Optional Components
+
+### A. Z3 SMT Theorem Prover (Layer C Verification)
+Z3 enables formal mathematical proof of predicate equivalence under SQL three-valued logic.
+```bash
+pip install z3-solver
+```
+If `z3-solver` is not installed, the verification gate continues safely using Layers A and B, reporting `Layer C: z3-solver unavailable`.
+
+### B. Generative AI / LLM Integration (Compiler-in-the-Loop)
+By default, generative AI is disabled and the app uses the deterministic template generator. To enable LLM generation, set environment variables or create a `.streamlit/secrets.toml` file:
+
+```bash
+# Example 1: Local Ollama (OpenAI-compatible)
+export LLM_PROVIDER="ollama"
+export LLM_BASE_URL="http://localhost:11434/v1"
+export LLM_MODEL="llama3"
+
+# Example 2: OpenAI API
+export LLM_PROVIDER="openai"
+export LLM_API_KEY="sk-..."
+export LLM_MODEL="gpt-4o-mini"
+```
+
+When active, untrusted LLM outputs are sent through the compiler's lexer, parser, and semantic analyzer. Any syntax or type errors trigger an automated diagnostic feedback loop (up to 2 repair attempts). If repair fails, the system automatically falls back to the deterministic template generator.
+
+---
+
+## 5. Running Tests & Evaluation
+
+The full test suite is completely automated and green:
+```bash
+python -m pytest -q
+# Expected: 153 passed in ~1.2s
+```
+
+### Generating the Large Benchmark Database
+To evaluate query execution on a realistically sized database (200,000 students and ~600,000 enrollments):
+```bash
+python scripts/make_large_db.py --students 200000 --output person2/large_university.db
+```
+*(This generates a separate database file without overwriting the standard `university.db`.)*
+
+### Evaluating Natural Language Phrasing (Author Regression Test)
+Run the author-written regression test suite of 32 English queries against gold SQL benchmarks (this is an author-written test suite verifying supported templates and phrasing, NOT an independent third-party accuracy benchmark):
+```bash
+python scripts/eval_nl.py
+```
+
+---
+
+## 6. What This Project Does NOT Claim
+
+In accordance with strict academic compiler engineering standards:
+1. **No universal equivalence without proof:** Finite result comparison on a sample database (Layer A) or 50 random databases (Layer B) provides empirical evidence, not formal proof. The term **"proved equivalent"** is strictly reserved for Layer C when Z3 returns `UNSAT`.
+2. **Timing differences on small DBs are noisy:** SQLite timings on a 1,000-row database fluctuate with OS scheduling and CPU cache state. Static VDBE opcode complexity counts are provided as deterministic proxies.
+3. **No automatic index creation:** The optimizer analyzes query structure and suggests optimal relational join ordering; it never mutates the underlying SQLite database schema or adds indexes.
+4. **Join order suggestions are informational:** The cost-based dynamic programming join optimizer calculates estimated relative costs based on database statistics, but does not force SQLite's query planner via `CROSS JOIN` unless explicitly requested.
+5. **Generative AI is not trusted blindly:** LLMs frequently hallucinate column names or invalid syntax. In this system, LLM responses are treated as untrusted user source code that must pass lexical, syntactic, semantic, and equivalence gate validation.
+6. **No subqueries in hand-written parser:** The hand-written parser supports SELECT queries with joins, arithmetic/boolean expressions, GROUP BY, HAVING, ORDER BY, and LIMIT. Nested subqueries (such as `WHERE x IN (SELECT ...)` or `(SELECT 1) = 1`) produce clean parse diagnostics and fall back to SQLGlot without crashing.
+
+---
+
+## 7. Viva & Demonstration Walkthrough
+
+1. **Front-End & Grammar:** Open **Query Studio**, enter a complex multi-table join or nested boolean query (`gpa >= 8.5 AND (age < 22 OR credits > 60)`). Navigate to the **Compiler Phases** tab to inspect the Token Stream, the Concrete Parse Tree, and the Graphviz diagram.
+2. **Semantic Type Checking & Suggestions:** Enter `SELECT salary FROM students;` or `SELECT gpa + department FROM students;`. View the structured `E201`/`E301` compiler diagnostic with exact line/column indicators and `difflib` "Did you mean?" suggestions.
+3. **Multi-Pass Optimizer Trace:** Select the **Redundant Range Filter** or **Constant Folding** example. Expand **Phase 4: Optimizer Trace** to view each pass firing sequentially with before/after SQL diffs until fixpoint.
+4. **Relational Algebra IR & Cost Model:** View the lower-level operator tree ($\pi$, $\sigma$, $\bowtie$) and inspect the cost model's table cardinality estimates and join-order optimization recommendations.
+5. **3-Layer Verification Gate:** Switch to the **Verification Lab** tab. Test a valid query against all 3 layers (Sample DB, 50 Random DBs, Z3 SMT prover). Then run the **Buggy Optimizer Mutation Demo** to watch the gate catch 5 deliberate optimizer bugs with counterexamples.
+6. **Bytecode Inspection:** Open **Phase 7: Code Generation View** to compare SQLite VDBE virtual machine opcodes (loops, index seeks, sorter allocations) between original and optimized queries.
+7. **Compiler-in-the-Loop AI:** Switch input mode to **Natural Language**. Try phrasing with synonyms ("Show pupils with marks above 9.0"). The system explains whether template matching or LLM inference was used and displays the validation status.
+8. **Benchmark & Report:** Click **Benchmark Queries** to generate a Markdown report with plan analysis, deterministic opcode metrics, and execution timing medians.
